@@ -10,7 +10,8 @@
       "Bash(npx:*)",
       "Bash(npm install:*)",
       "Bash(find /Users/p211/Documents/個人/SHOGI_2/shogi-app/node_modules/next/dist/docs -type d -name *app*)",
-      "Bash(GITHUB_TOKEN= git push 2>&1)"
+      "Bash(GITHUB_TOKEN= git push 2>&1)",
+      "Bash(npm list:*)"
     ]
   }
 }

@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // TODO: SendGridでメール送信
-  // const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify?token=${token}`;
-  // await sendMagicLinkEmail(normalizedEmail, verifyUrl);
+  // MVP: メール送信の代わりに認証リンクをレスポンスに含める
+  // 本番ではSendGrid等でメール送信し、verifyUrlをレスポンスから削除すること
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+  const verifyUrl = `${appUrl}/verify?token=${token}`;
 
-  // アカウント列挙防止：常に同じレスポンスを返す
-  return Response.json({ message: '確認メールを送信しました' });
+  return Response.json({ message: '確認メールを送信しました', verifyUrl });
 }

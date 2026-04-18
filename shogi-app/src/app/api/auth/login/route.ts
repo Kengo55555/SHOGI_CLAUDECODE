@@ -34,8 +34,9 @@ export async function POST(request: NextRequest) {
     where: { email: normalizedEmail },
   });
 
+  let verifyUrl: string | undefined;
+
   if (user && !user.deletedAt) {
-    // トークン生成・保存
     const token = generateToken();
     const tokenHash = hashToken(token);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
@@ -49,11 +50,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: メール送信
-    // const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify?token=${token}`;
-    // await sendMagicLinkEmail(normalizedEmail, verifyUrl);
+    // MVP: 認証リンクをレスポンスに含める
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    verifyUrl = `${appUrl}/verify?token=${token}`;
   }
 
-  // 常に同じレスポンス
-  return Response.json({ message: '確認メールを送信しました' });
+  return Response.json({ message: '確認メールを送信しました', verifyUrl });
 }

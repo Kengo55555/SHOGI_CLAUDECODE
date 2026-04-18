@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [verifyUrl, setVerifyUrl] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -21,13 +21,16 @@ export default function RegisterPage() {
         body: JSON.stringify({ email }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         setError(data.error?.message || 'エラーが発生しました');
         return;
       }
 
-      setSent(true);
+      if (data.verifyUrl) {
+        setVerifyUrl(data.verifyUrl);
+      }
     } catch {
       setError('通信エラーが発生しました');
     } finally {
@@ -35,19 +38,24 @@ export default function RegisterPage() {
     }
   }
 
-  if (sent) {
+  if (verifyUrl) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
           <h1 className="font-[family-name:var(--font-noto-serif)] text-2xl font-bold mb-4">
-            メールを確認してください
+            登録を完了する
           </h1>
-          <p className="text-gray-600 mb-2">
-            <span className="font-medium text-[#1A1A1A]">{email}</span> に確認メールを送信しました。
+          <p className="text-gray-600 mb-6">
+            <span className="font-medium text-[#1A1A1A]">{email}</span> で登録します。
           </p>
-          <p className="text-sm text-gray-500">
-            メール内のリンクをクリックして登録を完了してください。
-            <br />リンクの有効期限は15分です。
+          <a
+            href={verifyUrl}
+            className="inline-block w-full bg-[#2D5F2D] text-white py-3 rounded-lg font-medium hover:bg-[#245024] transition-colors"
+          >
+            認証してログイン
+          </a>
+          <p className="text-xs text-gray-400 mt-4">
+            リンクの有効期限は15分です
           </p>
         </div>
       </div>

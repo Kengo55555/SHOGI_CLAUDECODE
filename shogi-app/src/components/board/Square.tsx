@@ -9,21 +9,28 @@ interface SquareProps {
   isLastMove: boolean;
   isLegalTarget: boolean;
   isSelected: boolean;
+  isStar: boolean;
   onClick: (pos: Position) => void;
 }
 
-export function Square({ position, piece, isLastMove, isLegalTarget, isSelected, onClick }: SquareProps) {
+export function Square({ position, piece, isLastMove, isLegalTarget, isSelected, isStar, onClick }: SquareProps) {
   return (
     <div
       onClick={() => onClick(position)}
       className={`
-        relative aspect-square border-r border-b border-[#4A3520]/40
+        relative aspect-square
+        border-r border-b border-[#3D2B1F]/50
         flex items-center justify-center
         cursor-pointer
-        ${isLastMove ? 'bg-yellow-200/40' : ''}
-        ${isSelected ? 'bg-blue-200/40' : ''}
+        ${isLastMove ? 'bg-[#C8B83C]/25' : ''}
+        ${isSelected ? 'bg-[#5B8EC9]/25' : ''}
       `}
     >
+      {/* 星（目印） */}
+      {isStar && !piece && (
+        <div className="absolute w-[8px] h-[8px] bg-[#3D2B1F] rounded-full" />
+      )}
+
       {piece && (
         <PieceComponent
           type={piece.type}
@@ -34,10 +41,10 @@ export function Square({ position, piece, isLastMove, isLegalTarget, isSelected,
 
       {/* 合法手マーカー */}
       {isLegalTarget && !piece && (
-        <div className="absolute w-[30%] h-[30%] bg-black/20 rounded-full" />
+        <div className="absolute w-[28%] h-[28%] bg-[#2B4C7E]/30 rounded-full" />
       )}
       {isLegalTarget && piece && (
-        <div className="absolute inset-1 border-2 border-black/25 rounded-full" />
+        <div className="absolute inset-[6%] border-[2.5px] border-[#C41E3A]/40 rounded-full" />
       )}
     </div>
   );

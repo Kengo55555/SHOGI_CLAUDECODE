@@ -5,8 +5,9 @@ import type { GameState, Action, Position, Player, KomaType, MoveAction } from '
 import {
   createGame, applyMove, resign, undoMove, isGameOver,
   generateLegalMoves, getPieceAt, getMochigoma,
-  promotionStatus, opponent,
+  promotionStatus, opponent, gameToKif,
 } from '@/lib/shogi/core';
+import type { KifMetadata } from '@/lib/shogi/core';
 import { thinkMove } from '@/lib/shogi/ai';
 import { ShogiBoard } from '../board/ShogiBoard';
 import { MochigomaBar } from '../board/MochigomaBar';
@@ -41,10 +42,62 @@ export function GameScreen({
   const [cpuThinking, setCpuThinking] = useState(false);
   const [remainingUndos, setRemainingUndos] = useState(3);
   const [lastMove, setLastMove] = useState<{ from?: Position; to: Position } | null>(null);
+  const [resultSaved, setResultSaved] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isMyTurn = game.teban === myPlayer;
   const opponentPlayer = opponent(myPlayer);
+
+  // 終局時にDBに結果を保存
+  useEffect(() => {
+    if (!isGameOver(game) || resultSaved) return;
+    setResultSaved(true);
+
+    const status = game.status;
+    let winnerId: string | null = null;
+    let resultType = '';
+
+    if (status.type === 'checkmate') {
+      resultType = 'checkmate';
+    } else if (status.type === 'resign') {
+      resultType = 'resign';
+    } else if (status.type === 'timeout') {
+      resultType = 'timeout';
+    } else if (status.type === 'draw') {
+      resultType = 'draw';
+    } else if (status.type === 'foul') {
+      resultType = 'foul';
+    }
+
+    if ('winner' in status && status.winner) {
+      // CPU対戦ではwinnerがmyPlayerならuser ID、そうでなければnull(CPU勝ち)
+      if (isCpuGame) {
+        winnerId = status.winner === myPlayer ? 'self' : null;
+      }
+    }
+
+    const kifMeta: KifMetadata = {
+      startedAt: new Date(),
+      sente: myPlayer === 'sente' ? myName : opponentName,
+      gote: myPlayer === 'gote' ? myName : opponentName,
+      timeControl: timeControlMinutes,
+    };
+    const kifText = gameToKif(game, kifMeta);
+
+    fetch(`/api/matches/${matchId}/finish`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        winnerId,
+        resultType,
+        totalMoves: game.moveCount,
+        senteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - senteTime) / 1000),
+        goteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - goteTime) / 1000),
+        kifuKif: kifText,
+        movesJson: game.moveHistory,
+      }),
+    }).catch(() => { /* 保存失敗はログのみ */ });
+  }, [game.status.type]);
 
   // タイマー管理
   useEffect(() => {

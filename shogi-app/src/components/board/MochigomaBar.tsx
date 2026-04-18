@@ -9,12 +9,13 @@ interface MochigomaBarProps {
   owner: Player;
   isMyTurn: boolean;
   selectedPiece: KomaType | null;
+  perspective: Player;
   onSelect: (piece: KomaType) => void;
 }
 
 const MOCHIGOMA_ORDER: KomaType[] = ['hisha', 'kaku', 'kin', 'gin', 'kei', 'kyou', 'fu'];
 
-export function MochigomaBar({ mochigoma, owner, isMyTurn, selectedPiece, onSelect }: MochigomaBarProps) {
+export function MochigomaBar({ mochigoma, owner, isMyTurn, selectedPiece, perspective, onSelect }: MochigomaBarProps) {
   const pieces = MOCHIGOMA_ORDER.filter((k) => (mochigoma[k] || 0) > 0);
 
   return (
@@ -36,7 +37,7 @@ export function MochigomaBar({ mochigoma, owner, isMyTurn, selectedPiece, onSele
                 ${isSelected ? 'ring-2 ring-[#2B4C7E] rounded' : ''}
               `}
             >
-              <PieceComponent type={piece} owner={owner} isSelected={isSelected} />
+              <PieceComponent type={piece} owner={owner} perspective={perspective} isSelected={isSelected} />
               {count > 1 && (
                 <span className="absolute -bottom-0.5 -right-0.5 bg-[#2B4C7E] text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {count}

@@ -83,6 +83,7 @@ export function ShogiBoard({
                   isLegalTarget={isLegalTarget(suji, dan)}
                   isSelected={isSelected(suji, dan)}
                   isStar={isStar(suji, dan)}
+                  perspective={perspective}
                   onClick={onSquareClick}
                 />
               );

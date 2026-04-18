@@ -6,6 +6,7 @@ import { isPromoted } from '@/lib/shogi/core/constants';
 interface PieceProps {
   type: PieceType;
   owner: Player;
+  perspective: Player;
   isSelected?: boolean;
 }
 
@@ -32,10 +33,11 @@ const PIECE_DISPLAY: Record<PieceType, { top: string; bottom: string }> = {
   tokin:   { top: 'と', bottom: '' },
 };
 
-export function PieceComponent({ type, owner, isSelected }: PieceProps) {
+export function PieceComponent({ type, owner, perspective, isSelected }: PieceProps) {
   const display = PIECE_DISPLAY[type];
   const isNari = isPromoted(type);
-  const isGote = owner === 'gote';
+  // 相手側の駒を180度回転する（自分側は正立）
+  const shouldRotate = owner !== perspective;
   const textColor = isNari ? '#B22222' : '#1A1000';
   const isSingleChar = !display.bottom;
 
@@ -75,7 +77,7 @@ export function PieceComponent({ type, owner, isSelected }: PieceProps) {
           </filter>
         </defs>
 
-        <g transform={isGote ? 'rotate(180 50 56)' : ''}>
+        <g transform={shouldRotate ? 'rotate(180 50 56)' : ''}>
           {/* 駒の五角形（本体） */}
           <polygon
             points="50,4 94,28 86,108 14,108 6,28"

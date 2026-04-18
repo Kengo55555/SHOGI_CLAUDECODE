@@ -97,7 +97,7 @@ export default function KifuReplayPage() {
         {/* 盤面 */}
         <div className="flex flex-col items-center gap-2">
           <div className="w-full max-w-[500px]">
-            <MochigomaBar mochigoma={getMochigoma(displayState.boardState, 'gote')} owner="gote" isMyTurn={false} selectedPiece={null} onSelect={() => {}} />
+            <MochigomaBar mochigoma={getMochigoma(displayState.boardState, 'gote')} owner="gote" isMyTurn={false} selectedPiece={null} perspective="sente" onSelect={() => {}} />
           </div>
           <ShogiBoard
             boardState={displayState.boardState}
@@ -108,7 +108,7 @@ export default function KifuReplayPage() {
             onSquareClick={() => {}}
           />
           <div className="w-full max-w-[500px]">
-            <MochigomaBar mochigoma={getMochigoma(displayState.boardState, 'sente')} owner="sente" isMyTurn={false} selectedPiece={null} onSelect={() => {}} />
+            <MochigomaBar mochigoma={getMochigoma(displayState.boardState, 'sente')} owner="sente" isMyTurn={false} selectedPiece={null} perspective="sente" onSelect={() => {}} />
           </div>
 
           {/* コントロール */}

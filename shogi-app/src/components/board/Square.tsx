@@ -1,6 +1,6 @@
 'use client';
 
-import type { Piece, Position } from '@/lib/shogi/core/types';
+import type { Piece, Position, Player } from '@/lib/shogi/core/types';
 import { PieceComponent } from './Piece';
 
 interface SquareProps {
@@ -10,10 +10,11 @@ interface SquareProps {
   isLegalTarget: boolean;
   isSelected: boolean;
   isStar: boolean;
+  perspective: Player;
   onClick: (pos: Position) => void;
 }
 
-export function Square({ position, piece, isLastMove, isLegalTarget, isSelected, isStar, onClick }: SquareProps) {
+export function Square({ position, piece, isLastMove, isLegalTarget, isSelected, isStar, perspective, onClick }: SquareProps) {
   return (
     <div
       onClick={() => onClick(position)}
@@ -35,6 +36,7 @@ export function Square({ position, piece, isLastMove, isLegalTarget, isSelected,
         <PieceComponent
           type={piece.type}
           owner={piece.owner}
+          perspective={perspective}
           isSelected={isSelected}
         />
       )}

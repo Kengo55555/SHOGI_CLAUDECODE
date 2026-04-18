@@ -15,7 +15,8 @@
       "Bash(vercel login:*)",
       "Bash(vercel whoami:*)",
       "Bash(vercel:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(grep:*)"
     ]
   }
 }

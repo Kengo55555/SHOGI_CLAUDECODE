@@ -319,6 +319,7 @@ export function GameScreen({
           owner={topPlayer}
           isMyTurn={false}
           selectedPiece={null}
+          perspective={myPlayer}
           onSelect={() => {}}
         />
       </div>
@@ -338,6 +339,7 @@ export function GameScreen({
           owner={bottomPlayer}
           isMyTurn={isMyTurn && !isGameOver(game)}
           selectedPiece={interaction.type === 'mochigoma_selected' ? interaction.piece : null}
+          perspective={myPlayer}
           onSelect={handleMochigomaSelect}
         />
       </div>

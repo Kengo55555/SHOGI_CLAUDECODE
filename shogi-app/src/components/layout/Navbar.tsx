@@ -18,70 +18,48 @@ export function Navbar({ user }: NavbarProps) {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#1A1A1A] via-[#111] to-[#1A1A1A] border-b border-[#D4A017]/30">
+    <header className="bg-kurenai-obi shadow-md shadow-[#C4364A]/10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
-          <Link
-            href="/dashboard"
-            className="font-[family-name:var(--font-noto-serif)] text-lg font-bold text-kinpaku tracking-widest"
-          >
+          <Link href="/dashboard" className="font-[family-name:var(--font-noto-serif)] text-lg font-bold text-[#FFF8F0] tracking-widest drop-shadow">
             将棋処
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-1.5 text-sm text-[#F0E6D3]/70 hover:text-[#D4A017] transition-colors rounded hover:bg-[#D4A017]/5 font-serif"
-              >
+              <Link key={link.href} href={link.href} className="px-3 py-1.5 text-sm text-[#FFF8F0]/80 hover:text-[#FFF8F0] hover:bg-white/10 rounded transition-colors font-serif">
                 {link.label}
               </Link>
             ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <button className="relative p-1.5 text-[#D4A017]/50 hover:text-[#D4A017] transition-colors">
+            <button className="relative p-1.5 text-[#FFF8F0]/60 hover:text-[#FFF8F0] transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
             </button>
-            <Link
-              href="/settings/profile"
-              className="text-sm text-[#F4A7B9] hover:text-[#F4A7B9]/80 transition-colors font-serif"
-            >
+            <Link href="/settings/profile" className="text-sm text-[#F5D060] hover:text-[#FFF8F0] transition-colors font-serif">
               {user.handleName}
             </Link>
           </div>
 
-          <button
-            className="md:hidden p-2 text-[#D4A017]"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
+          <button className="md:hidden p-2 text-[#FFF8F0]" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
+              {isMobileMenuOpen
+                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              }
             </svg>
           </button>
         </div>
 
         {isMobileMenuOpen && (
-          <nav className="md:hidden pb-4 border-t border-[#D4A017]/10 pt-2">
+          <nav className="md:hidden pb-4 border-t border-white/20 pt-2">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block py-2 text-sm text-[#F0E6D3]/70 hover:text-[#D4A017] font-serif"
-              >
-                {link.label}
-              </Link>
+              <Link key={link.href} href={link.href} className="block py-2 text-sm text-[#FFF8F0]/80 hover:text-[#FFF8F0] font-serif">{link.label}</Link>
             ))}
-            <Link href="/settings/profile" className="block py-2 text-sm text-[#F4A7B9] font-serif">
-              設定
-            </Link>
+            <Link href="/settings/profile" className="block py-2 text-sm text-[#F5D060] font-serif">設定</Link>
           </nav>
         )}
       </div>

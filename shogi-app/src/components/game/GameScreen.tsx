@@ -18,6 +18,7 @@ import { TimeDisplay } from './TimeDisplay';
 
 interface GameScreenProps {
   matchId: string;
+  userId: string;
   isCpuGame: boolean;
   cpuLevel?: 1 | 2 | 3;
   myPlayer: Player;
@@ -33,7 +34,7 @@ type InteractionState =
   | { type: 'promotion_dialog'; from: Position; to: Position; pieceType: KomaType };
 
 export function GameScreen({
-  matchId, isCpuGame, cpuLevel, myPlayer, timeControlMinutes, opponentName, myName,
+  matchId, userId, isCpuGame, cpuLevel, myPlayer, timeControlMinutes, opponentName, myName,
 }: GameScreenProps) {
   const [game, setGame] = useState<GameState>(createGame);
   const [interaction, setInteraction] = useState<InteractionState>({ type: 'idle' });
@@ -42,37 +43,42 @@ export function GameScreen({
   const [cpuThinking, setCpuThinking] = useState(false);
   const [remainingUndos, setRemainingUndos] = useState(3);
   const [lastMove, setLastMove] = useState<{ from?: Position; to: Position } | null>(null);
-  const [resultSaved, setResultSaved] = useState(false);
+  const resultSavedRef = useRef(false);
+  const gameRef = useRef(game);
+  const senteTimeRef = useRef(senteTime);
+  const goteTimeRef = useRef(goteTime);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // refを最新値に同期（beforeunloadで使うため）
+  useEffect(() => { gameRef.current = game; }, [game]);
+  useEffect(() => { senteTimeRef.current = senteTime; }, [senteTime]);
+  useEffect(() => { goteTimeRef.current = goteTime; }, [goteTime]);
 
   const isMyTurn = game.teban === myPlayer;
   const opponentPlayer = opponent(myPlayer);
 
-  // 終局時にDBに結果を保存
-  useEffect(() => {
-    if (!isGameOver(game) || resultSaved) return;
-    setResultSaved(true);
+  /** DB保存関数 */
+  const saveResult = useCallback((g: GameState, isAbort: boolean = false) => {
+    if (resultSavedRef.current) return;
+    resultSavedRef.current = true;
 
-    const status = game.status;
-    let winnerId: string | null = null;
-    let resultType = '';
+    const status = g.status;
+    let playerWon: boolean | null = null;
+    let resultType = isAbort ? 'aborted' : '';
 
-    if (status.type === 'checkmate') {
-      resultType = 'checkmate';
-    } else if (status.type === 'resign') {
-      resultType = 'resign';
-    } else if (status.type === 'timeout') {
-      resultType = 'timeout';
-    } else if (status.type === 'draw') {
-      resultType = 'draw';
-    } else if (status.type === 'foul') {
-      resultType = 'foul';
-    }
-
-    if ('winner' in status && status.winner) {
-      // CPU対戦ではwinnerがmyPlayerならuser ID、そうでなければnull(CPU勝ち)
-      if (isCpuGame) {
-        winnerId = status.winner === myPlayer ? 'self' : null;
+    if (!isAbort) {
+      if (status.type === 'checkmate' || status.type === 'resign' || status.type === 'timeout' || status.type === 'disconnect') {
+        resultType = status.type;
+        playerWon = status.winner === myPlayer;
+      } else if (status.type === 'draw') {
+        resultType = 'draw';
+        playerWon = null;
+      } else if (status.type === 'foul') {
+        resultType = 'foul';
+        playerWon = status.loser !== myPlayer;
+      } else {
+        // まだ playing → 中断扱い
+        resultType = 'aborted';
       }
     }
 
@@ -82,22 +88,49 @@ export function GameScreen({
       gote: myPlayer === 'gote' ? myName : opponentName,
       timeControl: timeControlMinutes,
     };
-    const kifText = gameToKif(game, kifMeta);
 
-    fetch(`/api/matches/${matchId}/finish`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        winnerId,
-        resultType,
-        totalMoves: game.moveCount,
-        senteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - senteTime) / 1000),
-        goteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - goteTime) / 1000),
-        kifuKif: kifText,
-        movesJson: game.moveHistory,
-      }),
-    }).catch(() => { /* 保存失敗はログのみ */ });
-  }, [game.status.type]);
+    const payload = {
+      playerWon,
+      resultType,
+      totalMoves: g.moveCount,
+      senteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - senteTimeRef.current) / 1000),
+      goteTimeUsed: Math.floor((timeControlMinutes * 60 * 1000 - goteTimeRef.current) / 1000),
+      kifuKif: g.moveCount > 0 ? gameToKif(g, kifMeta) : '',
+      movesJson: g.moveHistory,
+    };
+
+    // sendBeacon を試行（ページ離脱時でも送信される）
+    const url = `/api/matches/${matchId}/finish`;
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url, new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    } else {
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {});
+    }
+  }, [matchId, myPlayer, myName, opponentName, timeControlMinutes]);
+
+  // 終局時に自動保存
+  useEffect(() => {
+    if (isGameOver(game) && !resultSavedRef.current) {
+      saveResult(game);
+    }
+  }, [game.status.type, saveResult]);
+
+  // ページ離脱・ブラウザバック時に保存
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!resultSavedRef.current && gameRef.current.moveCount > 0) {
+        saveResult(gameRef.current, !isGameOver(gameRef.current));
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [saveResult]);
 
   // タイマー管理
   useEffect(() => {
@@ -105,15 +138,9 @@ export function GameScreen({
 
     timerRef.current = setInterval(() => {
       if (game.teban === 'sente') {
-        setSenteTime((t) => {
-          if (t <= 0) return 0;
-          return t - 1000;
-        });
+        setSenteTime((t) => Math.max(0, t - 1000));
       } else {
-        setGoteTime((t) => {
-          if (t <= 0) return 0;
-          return t - 1000;
-        });
+        setGoteTime((t) => Math.max(0, t - 1000));
       }
     }, 1000);
 
@@ -130,7 +157,6 @@ export function GameScreen({
     const minDelay = cpuLevel === 1 ? 500 : cpuLevel === 2 ? 1000 : 2000;
 
     const start = Date.now();
-    // 非同期でCPU思考（UIブロック回避のためsetTimeout使用）
     setTimeout(() => {
       try {
         const result = thinkMove(game, cpuLevel);
@@ -164,21 +190,17 @@ export function GameScreen({
 
     const piece = getPieceAt(game.boardState, pos);
 
-    // 成り確認ダイアログ中
     if (interaction.type === 'promotion_dialog') return;
 
-    // 持ち駒選択中 → 打ち先を選択
     if (interaction.type === 'mochigoma_selected') {
       if (interaction.legalDrops.some((p) => p.suji === pos.suji && p.dan === pos.dan)) {
-        const action: Action = { type: 'drop', piece: interaction.piece, to: pos };
-        executeAction(action);
+        executeAction({ type: 'drop', piece: interaction.piece, to: pos });
       } else {
         setInteraction({ type: 'idle' });
       }
       return;
     }
 
-    // 駒選択中 → 移動先を選択
     if (interaction.type === 'piece_selected') {
       if (interaction.legalMoves.some((p) => p.suji === pos.suji && p.dan === pos.dan)) {
         const fromPiece = getPieceAt(game.boardState, interaction.position);
@@ -201,18 +223,15 @@ export function GameScreen({
         return;
       }
 
-      // 別の自分の駒をクリック → 選択変更
       if (piece && piece.owner === myPlayer) {
         selectPiece(pos);
         return;
       }
 
-      // その他 → 選択解除
       setInteraction({ type: 'idle' });
       return;
     }
 
-    // 何も選択していない → 自分の駒を選択
     if (piece && piece.owner === myPlayer) {
       selectPiece(pos);
     }
@@ -253,9 +272,7 @@ export function GameScreen({
 
   function handleUndo() {
     if (remainingUndos <= 0 || game.moveHistory.length < 2) return;
-    // 2手戻す（自分の手＋CPUの手）
-    let g = game;
-    const undo1 = undoMove(g);
+    const undo1 = undoMove(game);
     if (!undo1) return;
     const undo2 = undoMove(undo1);
     if (!undo2) return;
@@ -266,24 +283,21 @@ export function GameScreen({
   }
 
   function handleAbort() {
-    setGame({ ...game, status: { type: 'resign', winner: opponentPlayer } });
+    const abortedGame = { ...game, status: { type: 'resign' as const, winner: opponentPlayer } };
+    setGame(abortedGame);
   }
 
-  // 合法手ターゲット
   const legalTargets: Position[] =
     interaction.type === 'piece_selected' ? interaction.legalMoves :
     interaction.type === 'mochigoma_selected' ? interaction.legalDrops :
     [];
 
   const selectedPos = interaction.type === 'piece_selected' ? interaction.position : null;
-
-  // 上側のプレイヤー・下側のプレイヤー
   const topPlayer = opponentPlayer;
   const bottomPlayer = myPlayer;
 
   return (
     <div className="flex flex-col items-center gap-2 py-4 px-2">
-      {/* 上側プレイヤー情報 */}
       <div className="w-full max-w-[500px] flex items-center justify-between px-2">
         <div>
           <span className="text-sm font-medium">
@@ -299,7 +313,6 @@ export function GameScreen({
         )}
       </div>
 
-      {/* 上側持ち駒 */}
       <div className="w-full max-w-[500px]">
         <MochigomaBar
           mochigoma={getMochigoma(game.boardState, topPlayer)}
@@ -310,7 +323,6 @@ export function GameScreen({
         />
       </div>
 
-      {/* 将棋盤 */}
       <ShogiBoard
         boardState={game.boardState}
         perspective={myPlayer}
@@ -320,7 +332,6 @@ export function GameScreen({
         onSquareClick={handleSquareClick}
       />
 
-      {/* 下側持ち駒 */}
       <div className="w-full max-w-[500px]">
         <MochigomaBar
           mochigoma={getMochigoma(game.boardState, bottomPlayer)}
@@ -331,7 +342,6 @@ export function GameScreen({
         />
       </div>
 
-      {/* 下側プレイヤー情報 */}
       <div className="w-full max-w-[500px] flex items-center justify-between px-2">
         <span className="text-sm font-medium">
           {bottomPlayer === 'sente' ? '☗' : '☖'} {myName}
@@ -344,7 +354,6 @@ export function GameScreen({
         )}
       </div>
 
-      {/* 操作ボタン */}
       {!isGameOver(game) && (
         <GameControls
           isCpuGame={isCpuGame}
@@ -355,12 +364,10 @@ export function GameScreen({
         />
       )}
 
-      {/* 成り確認ダイアログ */}
       {interaction.type === 'promotion_dialog' && (
         <PromotionDialog pieceType={interaction.pieceType} onChoice={handlePromotion} />
       )}
 
-      {/* 対局終了オーバーレイ */}
       {isGameOver(game) && (
         <GameEndOverlay
           status={game.status}

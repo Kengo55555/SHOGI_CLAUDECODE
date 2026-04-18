@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { cpuLevel, timeControl, playerSente } = body;
 
-  // バリデーション
   if (![1, 2, 3].includes(cpuLevel)) {
     return createErrorResponse('VALIDATION_ERROR', 'CPUレベルは1〜3で指定してください', 400);
   }
@@ -18,20 +17,21 @@ export async function POST(request: NextRequest) {
     return createErrorResponse('VALIDATION_ERROR', '持ち時間は10分または15分を指定してください', 400);
   }
 
+  // 先手/後手の決定
   const isSente = playerSente === undefined ? Math.random() < 0.5 : !!playerSente;
 
   const match = await prisma.match.create({
     data: {
-      senteId: isSente ? user!.id : user!.id, // CPU戦はユーザーIDを先手に設定
+      senteId: user!.id,   // CPU対戦ではsenteIdに常にユーザーを設定
+      goteId: null,         // CPU
       cpuLevel,
       timeControl,
     },
   });
 
-  // TODO: 初期GameStateの生成はDD-01で実装
-
   return Response.json({
     matchId: match.id,
+    userId: user!.id,
     playerSide: isSente ? 'sente' : 'gote',
     cpuLevel,
     timeControl,

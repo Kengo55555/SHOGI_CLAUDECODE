@@ -31,7 +31,7 @@ export default function CpuSelectPage() {
 
       if (res.ok) {
         const data = await res.json();
-        router.push(`/game/${data.matchId}`);
+        router.push(`/game/${data.matchId}?side=${data.playerSide}`);
       }
     } catch {
       // エラー処理

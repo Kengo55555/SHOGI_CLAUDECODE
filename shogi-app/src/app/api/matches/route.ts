@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
   const matches = await prisma.match.findMany({
     where: {
-      status: 'finished',
+      status: { in: ['finished', 'aborted'] },
       OR: [
         { senteId: user!.id },
         { goteId: user!.id },
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
   const stats = await prisma.match.groupBy({
     by: ['winnerId'],
     where: {
-      status: 'finished',
+      status: { in: ['finished', 'aborted'] },
       OR: [
         { senteId: user!.id },
         { goteId: user!.id },
@@ -51,14 +51,29 @@ export async function GET(request: NextRequest) {
 
   const totalGames = stats.reduce((sum, s) => sum + s._count, 0);
   const wins = stats.find((s) => s.winnerId === user!.id)?._count || 0;
-  const draws = stats.find((s) => s.winnerId === null)?._count || 0;
-  const losses = totalGames - wins - draws;
+  // CPU対戦の引き分けはresultType='draw'で判定
+  const drawCount = await prisma.match.count({
+    where: {
+      resultType: 'draw',
+      OR: [{ senteId: user!.id }, { goteId: user!.id }],
+    },
+  });
+  const losses = totalGames - wins - drawCount;
 
   return Response.json({
     matches: items.map((m) => {
       const isSente = m.senteId === user!.id;
       const opponent = isSente ? m.gote : m.sente;
-      const result = m.winnerId === user!.id ? 'win' : m.winnerId === null ? 'draw' : 'lose';
+      let result: 'win' | 'lose' | 'draw';
+      if (m.winnerId === user!.id) {
+        result = 'win';
+      } else if (m.resultType === 'draw') {
+        result = 'draw';
+      } else if (m.resultType === 'aborted') {
+        result = 'lose'; // 中断は負け扱い
+      } else {
+        result = 'lose'; // winnerId=null かつ draw以外 = CPU勝ち
+      }
 
       return {
         id: m.id,
@@ -74,7 +89,7 @@ export async function GET(request: NextRequest) {
         endedAt: m.endedAt,
       };
     }),
-    summary: { totalGames, wins, losses, draws },
+    summary: { totalGames, wins, losses, draws: drawCount },
     nextCursor: hasMore ? items[items.length - 1].id : null,
   });
 }

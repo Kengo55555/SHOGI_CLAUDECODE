@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  /* 和風カラーパレット */
+  --color-kaya: #DDB06C;        /* 榧色（盤面） */
+  --color-koma: #E8C88A;        /* 駒木地色 */
+  --color-sumi: #1A1A1A;        /* 墨色（テキスト） */
+  --color-shu: #C41E3A;         /* 朱色（成駒・エラー） */
+  --color-washi: #FAF8F5;       /* 和紙風白（背景） */
+  --color-ai: #2B4C7E;          /* 藍色（アクセント） */
+  --color-midori: #2D5F2D;      /* 深緑（ボタン） */
+  --color-kin: #B8860B;         /* 金色（勝ち表示） */
+}
+
+@theme inline {
+  --color-background: var(--color-washi);
+  --color-foreground: var(--color-sumi);
+  --font-sans: var(--font-noto-sans);
+  --font-serif: var(--font-noto-serif);
+
+  --color-kaya: var(--color-kaya);
+  --color-koma: var(--color-koma);
+  --color-shu: var(--color-shu);
+  --color-ai: var(--color-ai);
+  --color-midori: var(--color-midori);
+  --color-kin: var(--color-kin);
+}

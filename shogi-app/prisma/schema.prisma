@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// ユーザー管理
+// ==========================================
+
+model User {
+  id         String    @id @default(uuid()) @db.Uuid
+  email      String    @unique
+  handleName String    @map("handle_name") @db.VarChar(20)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+
+  // リレーション
+  sessions             Session[]
+  matchRequestsSent    MatchRequest[]    @relation("Requester")
+  matchRequestsAccepted MatchRequest[]   @relation("Responder")
+  matchesAsSente       Match[]           @relation("Sente")
+  matchesAsGote        Match[]           @relation("Gote")
+  matchesWon           Match[]           @relation("Winner")
+  notifications        Notification[]
+  notificationSettings NotificationSettings?
+
+  @@map("users")
+}
+
+// ==========================================
+// 認証
+// ==========================================
+
+model AuthToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  tokenHash String   @map("token_hash")
+  type      String   @db.VarChar(10) // 'register' | 'login'
+  used      Boolean  @default(false)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([tokenHash], map: "idx_auth_tokens_hash")
+  @@map("auth_tokens")
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  lastUsed  DateTime @default(now()) @map("last_used") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash], map: "idx_sessions_token")
+  @@index([userId], map: "idx_sessions_user")
+  @@map("sessions")
+}
+
+// ==========================================
+// 対戦募集
+// ==========================================
+
+model MatchRequest {
+  id          String    @id @default(uuid()) @db.Uuid
+  requesterId String    @map("requester_id") @db.Uuid
+  timeControl Int       @map("time_control") @db.SmallInt // 10 or 15（分）
+  status      String    @default("open") @db.VarChar(20) // 'open' | 'accepted' | 'expired' | 'cancelled'
+  responderId String?   @map("responder_id") @db.Uuid
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  requester User    @relation("Requester", fields: [requesterId], references: [id])
+  responder User?   @relation("Responder", fields: [responderId], references: [id])
+  match     Match?
+
+  @@index([status], map: "idx_match_requests_status")
+  @@index([requesterId], map: "idx_match_requests_requester")
+  @@map("match_requests")
+}
+
+// ==========================================
+// 対局
+// ==========================================
+
+model Match {
+  id             String    @id @default(uuid()) @db.Uuid
+  matchRequestId String?   @unique @map("match_request_id") @db.Uuid
+  senteId        String    @map("sente_id") @db.Uuid
+  goteId         String?   @map("gote_id") @db.Uuid // NULLならCPU
+  cpuLevel       Int?      @map("cpu_level") @db.SmallInt // 1:初級, 2:中級, 3:上級
+  timeControl    Int       @map("time_control") @db.SmallInt
+  status         String    @default("playing") @db.VarChar(20) // 'playing' | 'finished' | 'aborted'
+  winnerId       String?   @map("winner_id") @db.Uuid
+  resultType     String?   @map("result_type") @db.VarChar(20)
+  totalMoves     Int?      @map("total_moves")
+  senteTimeUsed  Int?      @map("sente_time_used") // 秒
+  goteTimeUsed   Int?      @map("gote_time_used")  // 秒
+  startedAt      DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  endedAt        DateTime? @map("ended_at") @db.Timestamptz
+
+  matchRequest MatchRequest? @relation(fields: [matchRequestId], references: [id])
+  sente        User          @relation("Sente", fields: [senteId], references: [id])
+  gote         User?         @relation("Gote", fields: [goteId], references: [id])
+  winner       User?         @relation("Winner", fields: [winnerId], references: [id])
+  gameRecord   GameRecord?
+
+  @@index([senteId], map: "idx_matches_sente")
+  @@index([goteId], map: "idx_matches_gote")
+  @@map("matches")
+}
+
+// ==========================================
+// 棋譜
+// ==========================================
+
+model GameRecord {
+  id        String   @id @default(uuid()) @db.Uuid
+  matchId   String   @unique @map("match_id") @db.Uuid
+  kifuKif   String   @map("kifu_kif") // KIF形式棋譜
+  movesJson Json     @map("moves_json") // 指し手配列（JSONB）
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  match Match @relation(fields: [matchId], references: [id])
+
+  @@map("game_records")
+}
+
+// ==========================================
+// 通知
+// ==========================================
+
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  type        String    @db.VarChar(30) // 'match_request' | 'match_accepted' | 'match_result'
+  title       String    @db.VarChar(100)
+  body        String?
+  referenceId String?   @map("reference_id") @db.Uuid
+  readAt      DateTime? @map("read_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt], map: "idx_notifications_user_unread")
+  @@map("notifications")
+}
+
+model NotificationSettings {
+  userId       String   @id @map("user_id") @db.Uuid
+  emailEnabled Boolean  @default(false) @map("email_enabled")
+  siteEnabled  Boolean  @default(true) @map("site_enabled")
+  lineEnabled  Boolean  @default(false) @map("line_enabled")
+  slackEnabled Boolean  @default(false) @map("slack_enabled")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("notification_settings")
+}

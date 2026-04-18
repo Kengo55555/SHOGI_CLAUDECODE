@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git remote:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh auth:*)",
+      "Bash(GITHUB_TOKEN= gh auth switch --user Kengo55555)",
+      "Bash(GITHUB_TOKEN= git push -u origin main)",
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(find /Users/p211/Documents/個人/SHOGI_2/shogi-app/node_modules/next/dist/docs -type d -name *app*)",
+      "Bash(GITHUB_TOKEN= git push 2>&1)"
+    ]
+  }
+}

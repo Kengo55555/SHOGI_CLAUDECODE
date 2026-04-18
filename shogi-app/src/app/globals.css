@@ -1,27 +1,130 @@
 @import "tailwindcss";
 
 :root {
-  /* 和風カラーパレット */
-  --color-kaya: #DDB06C;        /* 榧色（盤面） */
-  --color-koma: #E8C88A;        /* 駒木地色 */
-  --color-sumi: #1A1A1A;        /* 墨色（テキスト） */
-  --color-shu: #C41E3A;         /* 朱色（成駒・エラー） */
-  --color-washi: #FAF8F5;       /* 和紙風白（背景） */
-  --color-ai: #2B4C7E;          /* 藍色（アクセント） */
-  --color-midori: #2D5F2D;      /* 深緑（ボタン） */
-  --color-kin: #B8860B;         /* 金色（勝ち表示） */
+  /* 遊郭カラーパレット */
+  --color-kurenai: #B22222;       /* 紅色 */
+  --color-shinku: #C41E3A;        /* 深紅 */
+  --color-kinpaku: #D4A017;       /* 金箔 */
+  --color-kogane: #C5941A;        /* 黄金 */
+  --color-shikkoku: #0D0D0D;      /* 漆黒 */
+  --color-ro: #1A1A1A;            /* 蝋色 */
+  --color-sumire: #4A1A5E;        /* 菫色（紫） */
+  --color-fuji: #6B3FA0;          /* 藤色 */
+  --color-sakura: #F4A7B9;        /* 桜色 */
+  --color-uguisu: #6B7E20;        /* 鶯色 */
+  --color-shu: #E34234;           /* 朱色 */
+  --color-kaya: #D4A84B;          /* 榧色（盤面） */
+  --color-koma: #E8C88A;          /* 駒木地 */
 }
 
 @theme inline {
-  --color-background: var(--color-washi);
-  --color-foreground: var(--color-sumi);
+  --color-background: var(--color-shikkoku);
+  --color-foreground: #F0E6D3;
   --font-sans: var(--font-noto-sans);
   --font-serif: var(--font-noto-serif);
+}
 
-  --color-kaya: var(--color-kaya);
-  --color-koma: var(--color-koma);
-  --color-shu: var(--color-shu);
-  --color-ai: var(--color-ai);
-  --color-midori: var(--color-midori);
-  --color-kin: var(--color-kin);
+/* ============================================
+   遊郭風 装飾パターン
+   ============================================ */
+
+/* 市松模様（背景） */
+.bg-ichimatsu {
+  background-image:
+    linear-gradient(45deg, rgba(212, 160, 23, 0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(212, 160, 23, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(212, 160, 23, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(212, 160, 23, 0.03) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+}
+
+/* 麻の葉模様 */
+.bg-asanoha {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%23D4A017' stroke-width='0.3' opacity='0.08'/%3E%3Cpath d='M30 0L30 60M0 30L60 30M0 0L60 60M60 0L0 60' fill='none' stroke='%23D4A017' stroke-width='0.2' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* 青海波模様 */
+.bg-seigaiha {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Cpath d='M0 40 C20 40 20 20 40 20 C60 20 60 40 80 40' fill='none' stroke='%23D4A017' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M-40 40 C-20 40 -20 20 0 20 C20 20 20 40 40 40' fill='none' stroke='%23D4A017' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M40 40 C60 40 60 20 80 20 C100 20 100 40 120 40' fill='none' stroke='%23D4A017' stroke-width='0.5' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+/* 金箔テキスト */
+.text-kinpaku {
+  background: linear-gradient(135deg, #D4A017 0%, #F5D060 30%, #D4A017 50%, #AA8010 70%, #D4A017 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 金縁ボーダー */
+.border-kinpaku {
+  border-image: linear-gradient(135deg, #D4A017, #F5D060, #D4A017, #AA8010) 1;
+}
+
+/* 漆塗りカード */
+.card-urushi {
+  background: linear-gradient(145deg, #1A1A1A 0%, #111111 50%, #1A1A1A 100%);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  box-shadow:
+    0 0 15px rgba(212, 160, 23, 0.05),
+    inset 0 1px 0 rgba(212, 160, 23, 0.1);
+}
+
+/* 紅ボタン */
+.btn-kurenai {
+  background: linear-gradient(135deg, #B22222 0%, #C41E3A 50%, #8B0000 100%);
+  color: #F5D060;
+  border: 1px solid rgba(212, 160, 23, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 10px rgba(178, 34, 34, 0.3);
+  transition: all 0.2s;
+}
+.btn-kurenai:hover {
+  background: linear-gradient(135deg, #C41E3A 0%, #DC143C 50%, #B22222 100%);
+  box-shadow: 0 4px 20px rgba(178, 34, 34, 0.5);
+}
+
+/* 金ボタン */
+.btn-kogane {
+  background: linear-gradient(135deg, #C5941A 0%, #D4A017 50%, #AA8010 100%);
+  color: #1A1A1A;
+  border: 1px solid rgba(245, 208, 96, 0.5);
+  font-weight: 700;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(212, 160, 23, 0.3);
+  transition: all 0.2s;
+}
+.btn-kogane:hover {
+  background: linear-gradient(135deg, #D4A017 0%, #F5D060 50%, #C5941A 100%);
+  box-shadow: 0 4px 20px rgba(212, 160, 23, 0.5);
+}
+
+/* 紫ボタン */
+.btn-sumire {
+  background: linear-gradient(135deg, #4A1A5E 0%, #6B3FA0 50%, #3D1550 100%);
+  color: #F0E6D3;
+  border: 1px solid rgba(107, 63, 160, 0.4);
+  transition: all 0.2s;
+}
+.btn-sumire:hover {
+  box-shadow: 0 4px 20px rgba(107, 63, 160, 0.4);
+}
+
+/* 装飾区切り線 */
+.divider-kinpaku {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.4), transparent);
+}
+
+/* アニメーション：金箔キラキラ */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 30%, rgba(245, 208, 96, 0.15) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
 }

@@ -12,18 +12,16 @@ export function TimeDisplay({ remainingMs, isActive }: TimeDisplayProps) {
   const isLow = totalSeconds <= 60;
   const isCritical = totalSeconds <= 10;
 
-  const timeStr = `${minutes}:${String(seconds).padStart(2, '0')}`;
-
   return (
     <span
       className={`
         font-mono text-lg font-bold tabular-nums
-        ${isActive ? 'text-[#1A1A1A]' : 'text-gray-400'}
+        ${isActive ? 'text-[#D4A017]' : 'text-[#F0E6D3]/30'}
         ${isLow && isActive ? 'text-[#C41E3A]' : ''}
         ${isCritical && isActive ? 'animate-pulse' : ''}
       `}
     >
-      {timeStr}
+      {minutes}:{String(seconds).padStart(2, '0')}
     </span>
   );
 }

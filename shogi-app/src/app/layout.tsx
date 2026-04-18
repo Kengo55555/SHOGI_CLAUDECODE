@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="ja"
       className={`${notoSans.variable} ${notoSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#FAF8F5] text-[#1A1A1A] font-[family-name:var(--font-noto-sans)]">
+      <body className="min-h-full flex flex-col bg-[#0D0D0D] text-[#F0E6D3] font-[family-name:var(--font-noto-sans)] bg-asanoha">
         {children}
       </body>
     </html>

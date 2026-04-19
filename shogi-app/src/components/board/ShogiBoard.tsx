@@ -35,69 +35,85 @@ export function ShogiBoard({
     if (lastMove.from && lastMove.from.suji === suji && lastMove.from.dan === dan) return true;
     return false;
   }
-
   function isLegalTarget(suji: number, dan: number): boolean {
     return legalTargets.some((p) => p.suji === suji && p.dan === dan);
   }
-
   function isSelected(suji: number, dan: number): boolean {
     return selectedPosition?.suji === suji && selectedPosition?.dan === dan;
   }
-
   function isStar(suji: number, dan: number): boolean {
     return STAR_POSITIONS.some((p) => p.suji === suji && p.dan === dan);
   }
 
   return (
     <div className="inline-block">
-      {/* 筋番号（上部） */}
-      <div className="flex ml-6 mr-5">
-        {sujiRange.map((suji) => (
-          <div key={suji} className="flex-1 text-center text-[11px] text-[#5C3D1A] font-serif pb-0.5">
-            {SUJI_LABELS[isFlipped ? 10 - suji : suji]}
+      {/* 着物フレームで盤を囲う */}
+      <div className="kimono-frame relative">
+        {/* 四辺の和柄帯 */}
+        <div className="kimono-band kimono-band-top    bg-seigaiha" aria-hidden />
+        <div className="kimono-band kimono-band-bottom bg-asanoha"  aria-hidden />
+        <div className="kimono-band kimono-band-left   bg-kikko"    aria-hidden />
+        <div className="kimono-band kimono-band-right  bg-kikko"    aria-hidden />
+
+        <div className="relative">
+          {/* 筋番号（上部） */}
+          <div className="flex ml-6 mr-5">
+            {sujiRange.map((suji) => (
+              <div
+                key={suji}
+                className="flex-1 text-center text-[11px] text-[#D4A017] font-serif pb-0.5 tracking-widest"
+              >
+                {SUJI_LABELS[isFlipped ? 10 - suji : suji]}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="flex">
-        {/* 盤面 */}
-        <div
-          className="grid grid-cols-9 border-l-2 border-t-2 border-[#3D2B1F]/70 bg-[#D4A84B] shadow-lg"
-          style={{
-            width: 'min(calc(100vw - 80px), 450px)',
-            aspectRatio: '1/1',
-            backgroundImage: `
-              linear-gradient(135deg, #D9B35A 0%, #C99B3A 30%, #D4A84B 50%, #CDAA45 70%, #C49535 100%)
-            `,
-          }}
-        >
-          {danRange.map((dan) =>
-            sujiRange.map((suji) => {
-              const piece = getPieceAt(boardState, { suji, dan });
-              return (
-                <Square
-                  key={`${suji}-${dan}`}
-                  position={{ suji, dan }}
-                  piece={piece}
-                  isLastMove={isLastMoveSquare(suji, dan)}
-                  isLegalTarget={isLegalTarget(suji, dan)}
-                  isSelected={isSelected(suji, dan)}
-                  isStar={isStar(suji, dan)}
-                  perspective={perspective}
-                  onClick={onSquareClick}
-                />
-              );
-            })
-          )}
-        </div>
-
-        {/* 段番号（右側） */}
-        <div className="flex flex-col ml-1">
-          {danRange.map((dan) => (
-            <div key={dan} className="flex-1 flex items-center text-[11px] text-[#5C3D1A] font-serif pl-0.5">
-              {DAN_LABELS[isFlipped ? 10 - dan : dan]}
+          <div className="flex">
+            {/* 盤面 */}
+            <div
+              className="grid grid-cols-9 border-l-2 border-t-2 border-[#1A0607] shadow-2xl"
+              style={{
+                width: 'min(calc(100vw - 120px), 450px)',
+                aspectRatio: '1/1',
+                background: `
+                  linear-gradient(180deg, #E8C07A 0%, #D9A866 40%, #B88846 100%)
+                `,
+                boxShadow:
+                  'inset 0 0 0 3px #1A0607, inset 0 0 0 4px #D4A017, inset 0 0 60px rgba(120,60,10,.4), 0 10px 0 #6A3812, 0 14px 30px rgba(0,0,0,.6)',
+              }}
+            >
+              {danRange.map((dan) =>
+                sujiRange.map((suji) => {
+                  const piece = getPieceAt(boardState, { suji, dan });
+                  return (
+                    <Square
+                      key={`${suji}-${dan}`}
+                      position={{ suji, dan }}
+                      piece={piece}
+                      isLastMove={isLastMoveSquare(suji, dan)}
+                      isLegalTarget={isLegalTarget(suji, dan)}
+                      isSelected={isSelected(suji, dan)}
+                      isStar={isStar(suji, dan)}
+                      perspective={perspective}
+                      onClick={onSquareClick}
+                    />
+                  );
+                })
+              )}
             </div>
-          ))}
+
+            {/* 段番号（右側） */}
+            <div className="flex flex-col ml-1">
+              {danRange.map((dan) => (
+                <div
+                  key={dan}
+                  className="flex-1 flex items-center text-[11px] text-[#D4A017] font-serif pl-0.5"
+                >
+                  {DAN_LABELS[isFlipped ? 10 - dan : dan]}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

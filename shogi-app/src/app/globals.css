@@ -10,6 +10,13 @@
   --color-sumi: #2D2226;
   --color-kuro: #1A1118;
   --color-fuji: #8B6AAE;
+
+  /* Edo yūkaku palette */
+  --color-beni-deep: #7A0F1A;
+  --color-kin-bright: #F0CF6A;
+  --color-kin-dark:   #7A5E22;
+  --color-washi:      #F4E4C1;
+  --color-murasaki:   #4A1D3A;
 }
 
 @theme inline {
@@ -20,116 +27,217 @@
 }
 
 /* ===========================================
-   花柄和風テキスタイル背景
+   Edo 遊郭 — ステージ背景
    =========================================== */
+.bg-edo-stage {
+  background:
+    radial-gradient(ellipse at top, #3a1013 0%, #1a0607 55%, #0a0304 100%);
+}
 
+/* ===========================================
+   和柄パターン
+   =========================================== */
+.bg-seigaiha {
+  background-color: var(--color-beni-deep);
+  background-image:
+    radial-gradient(circle at 50% 100%, transparent 14px, var(--color-kinpaku) 14px 16px, transparent 16px),
+    radial-gradient(circle at 0 100%,   transparent 14px, var(--color-kinpaku) 14px 16px, transparent 16px),
+    radial-gradient(circle at 100% 100%,transparent 14px, var(--color-kinpaku) 14px 16px, transparent 16px);
+  background-size: 32px 16px;
+}
+.bg-asanoha {
+  background-color: var(--color-murasaki);
+  background-image:
+    linear-gradient(60deg,  transparent 49%, var(--color-kinpaku) 49% 51%, transparent 51%),
+    linear-gradient(-60deg, transparent 49%, var(--color-kinpaku) 49% 51%, transparent 51%),
+    linear-gradient(0deg,   transparent 49%, var(--color-kinpaku) 49% 51%, transparent 51%);
+  background-size: 24px 42px;
+}
+.bg-kikko {
+  background-color: var(--color-kurenai);
+  background-image:
+    linear-gradient(30deg,  var(--color-kinpaku) 12%, transparent 12.5% 87%, var(--color-kinpaku) 87.5%),
+    linear-gradient(150deg, var(--color-kinpaku) 12%, transparent 12.5% 87%, var(--color-kinpaku) 87.5%);
+  background-size: 20px 34px;
+}
+.bg-kimono-cloud {
+  background-color: #F4F1E8;
+  background-image:
+    /* 雲取り */
+    radial-gradient(ellipse 90% 60% at 70% 20%, #FFFFFF 0%, transparent 45%),
+    radial-gradient(ellipse 80% 60% at 20% 80%, #FFFFFFE0 0%, transparent 45%),
+    /* 紅の雲 */
+    radial-gradient(ellipse 100% 70% at 10% 0%, var(--color-kurenai) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 60% at 90% 100%, var(--color-kurenai) 0%, transparent 45%),
+    /* 桜散らし */
+    radial-gradient(circle at 30% 30%, var(--color-sakura) 4px, transparent 5px),
+    radial-gradient(circle at 70% 60%, var(--color-sakura) 5px, transparent 6px),
+    radial-gradient(circle at 20% 70%, var(--color-kinpaku) 3px, transparent 4px),
+    radial-gradient(circle at 85% 35%, var(--color-kogane) 3px, transparent 4px);
+}
+
+/* ===========================================
+   着物フレーム（盤を囲む帯）
+   =========================================== */
+.kimono-frame {
+  position: relative;
+  padding: 42px;
+  background: repeating-linear-gradient(135deg, #F6EAD4 0 18px, #F0DFBE 18px 36px);
+  box-shadow:
+    inset 0 0 0 2px var(--color-kinpaku),
+    inset 0 0 0 4px #1A0607,
+    0 20px 60px rgba(0,0,0,.5);
+}
+.kimono-band {
+  position: absolute;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--color-kin-dark);
+}
+.kimono-band-top    { top:8px;    left:8px;   right:8px;   height:32px; }
+.kimono-band-bottom { bottom:8px; left:8px;   right:8px;   height:32px; }
+.kimono-band-left   { top:40px;   bottom:40px;left:8px;    width:32px; }
+.kimono-band-right  { top:40px;   bottom:40px;right:8px;   width:32px; }
+
+/* ===========================================
+   提灯（赤提灯）
+   =========================================== */
+.chochin {
+  display: inline-block;
+  position: relative;
+  width: 28px; height: 36px;
+  background: radial-gradient(ellipse at 30% 30%, #FFB07A 0%, #E8432A 45%, #8B1212 100%);
+  border-radius: 50% / 40%;
+  box-shadow:
+    inset 0 -5px 8px rgba(0,0,0,.5),
+    inset 0 3px 5px rgba(255,220,170,.5),
+    0 0 12px rgba(232,67,42,.45);
+  vertical-align: middle;
+}
+.chochin::before, .chochin::after {
+  content: ""; position: absolute; left: -3px; right: -3px; height: 4px;
+  background: linear-gradient(180deg, #2A1208, #0A0202);
+  border-radius: 2px;
+}
+.chochin::before { top: -2px; }
+.chochin::after  { bottom: -2px; }
+
+/* ===========================================
+   桜吹雪
+   =========================================== */
+.petal-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  overflow: hidden;
+}
+.petal {
+  position: absolute; width: 10px; height: 10px;
+  background: radial-gradient(circle at 40% 40%, #FFD0D8 40%, #E88A9E 100%);
+  border-radius: 100% 0 60% 40% / 60% 40% 60% 40%;
+  opacity: .75;
+  animation: float-petal linear infinite;
+  filter: drop-shadow(0 0 2px rgba(255,180,200,.5));
+}
+@keyframes float-petal {
+  0%   { transform: translateY(-20px) rotate(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===========================================
+   既存ユーティリティ（残す）
+   =========================================== */
 .bg-hanagara {
   background-color: #FCEEF0;
   background-image:
-    /* 紅の大きな雲取り模様 */
     radial-gradient(ellipse 120% 80% at 10% 0%, #C4364A50 0%, transparent 50%),
     radial-gradient(ellipse 100% 70% at 90% 100%, #C4364A40 0%, transparent 45%),
     radial-gradient(ellipse 80% 60% at 50% 50%, #E05B6F18 0%, transparent 50%),
-    /* 白の雲 */
     radial-gradient(ellipse 90% 50% at 70% 20%, #FFFFFF90 0%, transparent 40%),
     radial-gradient(ellipse 80% 60% at 20% 80%, #FFFFFF80 0%, transparent 45%),
     radial-gradient(ellipse 60% 40% at 40% 35%, #FFFFFF70 0%, transparent 35%),
-    /* 黒の雲取り */
     radial-gradient(ellipse 70% 50% at 85% 50%, #1A111840 0%, transparent 40%),
     radial-gradient(ellipse 50% 40% at 15% 40%, #1A111830 0%, transparent 35%);
 }
 
-/* 密度の高い花柄SVGパターン */
-.bg-sakura-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3C!-- 花1: 大輪（紅） --%3E%3Ccircle cx='30' cy='25' r='10' fill='%23C4364A' opacity='0.6'/%3E%3Ccircle cx='22' cy='18' r='8' fill='%23E05B6F' opacity='0.55'/%3E%3Ccircle cx='38' cy='18' r='8' fill='%23C4364A' opacity='0.5'/%3E%3Ccircle cx='24' cy='32' r='8' fill='%23E05B6F' opacity='0.45'/%3E%3Ccircle cx='36' cy='32' r='8' fill='%23C4364A' opacity='0.5'/%3E%3Ccircle cx='30' cy='25' r='4' fill='%23F5D060' opacity='0.7'/%3E%3C!-- 花2: 桜（ピンク） --%3E%3Ccircle cx='80' cy='15' r='7' fill='%23F4A7B9' opacity='0.6'/%3E%3Ccircle cx='74' cy='10' r='6' fill='%23F8C8D4' opacity='0.55'/%3E%3Ccircle cx='86' cy='10' r='6' fill='%23F4A7B9' opacity='0.5'/%3E%3Ccircle cx='76' cy='21' r='6' fill='%23F8C8D4' opacity='0.45'/%3E%3Ccircle cx='84' cy='21' r='6' fill='%23F4A7B9' opacity='0.5'/%3E%3Ccircle cx='80' cy='15' r='3' fill='%23D4A017' opacity='0.6'/%3E%3C!-- 花3: 小花（白紅） --%3E%3Ccircle cx='130' cy='30' r='5' fill='%23FFF0F0' opacity='0.7'/%3E%3Ccircle cx='126' cy='26' r='4' fill='%23FFFFFF' opacity='0.6'/%3E%3Ccircle cx='134' cy='26' r='4' fill='%23FFF0F0' opacity='0.6'/%3E%3Ccircle cx='128' cy='34' r='4' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='132' cy='34' r='4' fill='%23FFF0F0' opacity='0.55'/%3E%3Ccircle cx='130' cy='30' r='2' fill='%23E8B828' opacity='0.7'/%3E%3C!-- 花4: 大輪（紅梅） --%3E%3Ccircle cx='55' cy='60' r='9' fill='%23E05B6F' opacity='0.55'/%3E%3Ccircle cx='48' cy='54' r='7' fill='%23C4364A' opacity='0.5'/%3E%3Ccircle cx='62' cy='54' r='7' fill='%23E05B6F' opacity='0.45'/%3E%3Ccircle cx='50' cy='66' r='7' fill='%23C4364A' opacity='0.45'/%3E%3Ccircle cx='60' cy='66' r='7' fill='%23E05B6F' opacity='0.5'/%3E%3Ccircle cx='55' cy='60' r='3.5' fill='%23F5D060' opacity='0.65'/%3E%3C!-- 花5: 桜小 --%3E%3Ccircle cx='110' cy='55' r='6' fill='%23F4A7B9' opacity='0.5'/%3E%3Ccircle cx='106' cy='51' r='5' fill='%23F8C8D4' opacity='0.5'/%3E%3Ccircle cx='114' cy='51' r='5' fill='%23F4A7B9' opacity='0.45'/%3E%3Ccircle cx='110' cy='55' r='2.5' fill='%23D4A017' opacity='0.55'/%3E%3C!-- 花6: 紅（下部） --%3E%3Ccircle cx='20' cy='100' r='8' fill='%23C4364A' opacity='0.5'/%3E%3Ccircle cx='14' cy='95' r='6' fill='%23E05B6F' opacity='0.45'/%3E%3Ccircle cx='26' cy='95' r='6' fill='%23C4364A' opacity='0.45'/%3E%3Ccircle cx='16' cy='105' r='6' fill='%23E05B6F' opacity='0.4'/%3E%3Ccircle cx='24' cy='105' r='6' fill='%23C4364A' opacity='0.45'/%3E%3Ccircle cx='20' cy='100' r='3' fill='%23F5D060' opacity='0.6'/%3E%3C!-- 花7: 白花 --%3E%3Ccircle cx='70' cy='95' r='6' fill='%23FFFFFF' opacity='0.65'/%3E%3Ccircle cx='65' cy='91' r='5' fill='%23FFF5F5' opacity='0.6'/%3E%3Ccircle cx='75' cy='91' r='5' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='67' cy='99' r='5' fill='%23FFF5F5' opacity='0.5'/%3E%3Ccircle cx='73' cy='99' r='5' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='70' cy='95' r='2.5' fill='%23E8B828' opacity='0.6'/%3E%3C!-- 花8: 大輪桜 --%3E%3Ccircle cx='140' cy='85' r='9' fill='%23F4A7B9' opacity='0.55'/%3E%3Ccircle cx='133' cy='79' r='7' fill='%23F8C8D4' opacity='0.5'/%3E%3Ccircle cx='147' cy='79' r='7' fill='%23F4A7B9' opacity='0.45'/%3E%3Ccircle cx='135' cy='91' r='7' fill='%23F8C8D4' opacity='0.45'/%3E%3Ccircle cx='145' cy='91' r='7' fill='%23F4A7B9' opacity='0.5'/%3E%3Ccircle cx='140' cy='85' r='3.5' fill='%23D4A017' opacity='0.6'/%3E%3C!-- 花9: 紅小 --%3E%3Ccircle cx='100' cy='130' r='7' fill='%23C4364A' opacity='0.5'/%3E%3Ccircle cx='95' cy='125' r='6' fill='%23E05B6F' opacity='0.45'/%3E%3Ccircle cx='105' cy='125' r='6' fill='%23C4364A' opacity='0.4'/%3E%3Ccircle cx='100' cy='130' r='3' fill='%23F5D060' opacity='0.6'/%3E%3C!-- 花10: 桜ミニ --%3E%3Ccircle cx='40' cy='140' r='5' fill='%23F4A7B9' opacity='0.5'/%3E%3Ccircle cx='36' cy='137' r='4' fill='%23F8C8D4' opacity='0.45'/%3E%3Ccircle cx='44' cy='137' r='4' fill='%23F4A7B9' opacity='0.45'/%3E%3Ccircle cx='40' cy='140' r='2' fill='%23D4A017' opacity='0.55'/%3E%3C!-- 花11: 白ミニ --%3E%3Ccircle cx='150' cy='140' r='4' fill='%23FFFFFF' opacity='0.6'/%3E%3Ccircle cx='147' cy='137' r='3.5' fill='%23FFF5F5' opacity='0.55'/%3E%3Ccircle cx='153' cy='137' r='3.5' fill='%23FFFFFF' opacity='0.55'/%3E%3Ccircle cx='150' cy='140' r='1.8' fill='%23E8B828' opacity='0.6'/%3E%3C!-- 散り花弁 --%3E%3Cellipse cx='45' cy='45' rx='3' ry='1.5' fill='%23F4A7B9' opacity='0.4' transform='rotate(30 45 45)'/%3E%3Cellipse cx='95' cy='40' rx='2.5' ry='1.2' fill='%23C4364A' opacity='0.35' transform='rotate(-20 95 40)'/%3E%3Cellipse cx='120' cy='110' rx='3' ry='1.5' fill='%23F4A7B9' opacity='0.35' transform='rotate(45 120 110)'/%3E%3Cellipse cx='15' cy='65' rx='2' ry='1' fill='%23E05B6F' opacity='0.3' transform='rotate(60 15 65)'/%3E%3Cellipse cx='85' cy='75' rx='2.5' ry='1.2' fill='%23F8C8D4' opacity='0.35' transform='rotate(-40 85 75)'/%3E%3Cellipse cx='145' cy='60' rx='2' ry='1' fill='%23C4364A' opacity='0.3' transform='rotate(15 145 60)'/%3E%3Cellipse cx='60' cy='120' rx='2.5' ry='1.2' fill='%23F4A7B9' opacity='0.3' transform='rotate(-55 60 120)'/%3E%3Cellipse cx='125' cy='25' rx='2' ry='1' fill='%23E05B6F' opacity='0.25' transform='rotate(70 125 25)'/%3E%3C!-- 金箔ドット --%3E%3Ccircle cx='50' cy='80' r='1' fill='%23D4A017' opacity='0.4'/%3E%3Ccircle cx='90' cy='20' r='0.8' fill='%23E8B828' opacity='0.35'/%3E%3Ccircle cx='120' cy='70' r='1.2' fill='%23D4A017' opacity='0.3'/%3E%3Ccircle cx='30' cy='150' r='0.8' fill='%23E8B828' opacity='0.35'/%3E%3Ccircle cx='75' cy='140' r='1' fill='%23D4A017' opacity='0.3'/%3E%3C/svg%3E");
-}
-
-/* 紅のグラデーション帯 */
 .bg-kurenai-obi {
   background: linear-gradient(135deg, #C4364A 0%, #E05B6F 40%, #C4364A 60%, #A02D3E 100%);
 }
-
-/* 金箔テキスト */
 .text-kinpaku {
   background: linear-gradient(135deg, #D4A017, #F5D060, #D4A017, #AA8010);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-/* 花柄カード */
 .card-hana {
   background: linear-gradient(145deg, #FFFFFF 0%, #FFF5F0 50%, #FFFFFF 100%);
   border: 1px solid #F4A7B940;
-  box-shadow:
-    0 2px 12px rgba(196, 54, 74, 0.06),
-    0 0 0 1px rgba(244, 167, 185, 0.15);
+  box-shadow: 0 2px 12px rgba(196,54,74,.06), 0 0 0 1px rgba(244,167,185,.15);
 }
-
-/* 漆黒カード（対局画面用） */
 .card-urushi {
   background: linear-gradient(145deg, #2D2226 0%, #1A1118 50%, #2D2226 100%);
-  border: 1px solid rgba(212, 160, 23, 0.25);
-  box-shadow: 0 0 15px rgba(212, 160, 23, 0.05);
+  border: 1px solid rgba(212,160,23,.25);
+  box-shadow: 0 0 15px rgba(212,160,23,.05);
   color: #FFF8F0;
 }
+/* 金縁・黒漆カード（駒台用・強化版） */
+.card-yukaku {
+  background: linear-gradient(180deg, #120304, #2A0608);
+  border: 2px solid var(--color-kinpaku);
+  box-shadow:
+    inset 0 0 0 4px #0A0202,
+    inset 0 0 0 6px var(--color-kin-dark),
+    0 10px 30px rgba(0,0,0,.5);
+  color: var(--color-washi);
+}
 
-/* 紅ボタン */
 .btn-kurenai {
   background: linear-gradient(135deg, #C4364A, #E05B6F, #C4364A);
   color: #FFF8F0;
-  border: 1px solid rgba(244, 167, 185, 0.3);
+  border: 1px solid rgba(244,167,185,.3);
   font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 3px 12px rgba(196, 54, 74, 0.25);
-  transition: all 0.2s;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 3px 12px rgba(196,54,74,.25);
+  transition: all .2s;
 }
-.btn-kurenai:hover {
-  box-shadow: 0 5px 20px rgba(196, 54, 74, 0.4);
-  transform: translateY(-1px);
+.btn-kurenai:hover { box-shadow: 0 5px 20px rgba(196,54,74,.4); transform: translateY(-1px); }
+.btn-beni {
+  background: linear-gradient(180deg, var(--color-kurenai), var(--color-beni-deep));
+  color: var(--color-washi);
+  border: 1px solid var(--color-kinpaku);
+  font-weight: 700;
+  letter-spacing: .15em;
+  transition: all .15s;
 }
-
-/* 金ボタン */
+.btn-beni:hover { filter: brightness(1.15); }
 .btn-kogane {
   background: linear-gradient(135deg, #C5941A, #E8B828, #C5941A);
-  color: #2D2226;
-  font-weight: 700;
-  box-shadow: 0 3px 12px rgba(212, 160, 23, 0.25);
-  transition: all 0.2s;
+  color: #2D2226; font-weight: 700;
+  box-shadow: 0 3px 12px rgba(212,160,23,.25);
+  transition: all .2s;
 }
-.btn-kogane:hover {
-  box-shadow: 0 5px 20px rgba(212, 160, 23, 0.4);
-}
-
-/* 紫ボタン */
+.btn-kogane:hover { box-shadow: 0 5px 20px rgba(212,160,23,.4); }
 .btn-sumire {
   background: linear-gradient(135deg, #6B4A8E, #8B6AAE, #6B4A8E);
-  color: #FFF8F0;
-  transition: all 0.2s;
+  color: #FFF8F0; transition: all .2s;
 }
-.btn-sumire:hover {
-  box-shadow: 0 4px 15px rgba(139, 106, 174, 0.3);
-}
+.btn-sumire:hover { box-shadow: 0 4px 15px rgba(139,106,174,.3); }
 
-/* 装飾区切り線 */
 .divider-hana {
   height: 2px;
   background: linear-gradient(90deg, transparent, #C4364A40, #D4A01760, #C4364A40, transparent);
 }
 
-/* shimmerアニメーション */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 .shimmer {
-  background-image: linear-gradient(90deg, transparent 30%, rgba(244, 167, 185, 0.08) 50%, transparent 70%);
+  background-image: linear-gradient(90deg, transparent 30%, rgba(244,167,185,.08) 50%, transparent 70%);
   background-size: 200% 100%;
   animation: shimmer 4s infinite;
 }
 
-/* 花吹雪アニメーション */
-@keyframes float-petal {
+@keyframes float-petal-legacy {
   0% { transform: translateY(0) rotate(0deg); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 1; }

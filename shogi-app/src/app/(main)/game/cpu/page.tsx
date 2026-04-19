@@ -42,13 +42,15 @@ export default function CpuSelectPage() {
             <button
               key={l.value}
               onClick={() => setCpuLevel(l.value)}
-              className={`card-urushi rounded-lg p-4 text-center transition-all ${
-                cpuLevel === l.value ? 'border-[#D4A017]/70 shadow-[0_0_15px_rgba(212,160,23,0.15)]' : ''
+              className={`rounded-lg p-4 text-center transition-all border-2 ${
+                cpuLevel === l.value
+                  ? 'border-[#D4A017] bg-[#D4A017]/10 shadow-[0_0_20px_rgba(212,160,23,0.25)]'
+                  : 'card-urushi border-transparent hover:border-[#D4A017]/30'
               }`}
             >
-              <div className="font-bold font-serif text-[#F0E6D3] mb-1">{l.label}</div>
-              <div className="text-[#D4A017] text-sm mb-1">{'★'.repeat(l.stars)}{'☆'.repeat(3 - l.stars)}</div>
-              <div className="text-[10px] text-[#F0E6D3]/40">{l.desc}</div>
+              <div className={`font-bold font-serif mb-1 ${cpuLevel === l.value ? 'text-[#D4A017]' : 'text-[#F0E6D3]'}`}>{l.label}</div>
+              <div className={`text-sm mb-1 ${cpuLevel === l.value ? 'text-[#F0CF6A]' : 'text-[#D4A017]'}`}>{'★'.repeat(l.stars)}{'☆'.repeat(3 - l.stars)}</div>
+              <div className={`text-[10px] ${cpuLevel === l.value ? 'text-[#D4A017]/70' : 'text-[#F0E6D3]/40'}`}>{l.desc}</div>
             </button>
           ))}
         </div>

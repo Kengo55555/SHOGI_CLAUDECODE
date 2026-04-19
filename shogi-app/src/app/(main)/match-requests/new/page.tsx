@@ -35,41 +35,41 @@ export default function NewMatchRequestPage() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
-      <h2 className="text-xl font-bold mb-6">対戦募集</h2>
+      <h2 className="font-[family-name:var(--font-noto-serif)] text-xl font-bold mb-6 text-kinpaku tracking-wider text-center">対戦募集</h2>
 
       <section className="mb-6">
-        <h3 className="text-sm font-medium mb-3">持ち時間</h3>
+        <h3 className="text-xs font-medium mb-3 text-[#D4A017]/70">持ち時間</h3>
         <div className="space-y-2">
           {[
-            { value: 10 as const, label: '10分切れ負け' },
-            { value: 15 as const, label: '15分切れ負け' },
+            { value: 10 as const, label: '十分切れ負け' },
+            { value: 15 as const, label: '十五分切れ負け' },
           ].map((opt) => (
-            <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+            <label key={opt.value} className="flex items-center gap-2 cursor-pointer text-sm text-[#F4E4C1]/70">
               <input
                 type="radio"
                 name="timeControl"
                 checked={timeControl === opt.value}
                 onChange={() => setTimeControl(opt.value)}
-                className="accent-[#2B4C7E]"
+                className="accent-[#D4A017]"
               />
-              <span className="text-sm">{opt.label}</span>
+              {opt.label}
             </label>
           ))}
         </div>
       </section>
 
-      <p className="text-xs text-gray-500 mb-6">
+      <p className="text-xs text-[#F4E4C1]/30 mb-6 font-serif">
         ※全登録ユーザーに通知が送信されます
       </p>
 
-      {error && <p className="text-[#C41E3A] text-sm mb-4">{error}</p>}
+      {error && <p className="text-[#C4364A] text-sm mb-4">{error}</p>}
 
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full bg-[#2D5F2D] text-white py-3 rounded-lg font-medium hover:bg-[#245024] transition-colors disabled:opacity-50"
+        className="btn-kurenai w-full py-3 rounded-lg text-lg font-bold tracking-[0.3em] disabled:opacity-50"
       >
-        {loading ? '送信中...' : '対戦相手を募集する'}
+        {loading ? '準備中...' : '対戦相手を募集する'}
       </button>
     </div>
   );

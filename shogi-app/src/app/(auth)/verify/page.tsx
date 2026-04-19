@@ -36,28 +36,28 @@ function VerifyContent() {
   }, [searchParams]);
 
   if (status === 'loading') {
-    return <p className="text-gray-600">認証中...</p>;
+    return <p className="text-[#F4E4C1]/60 font-serif">認証中...</p>;
   }
 
   if (status === 'error') {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
-        <h1 className="text-xl font-bold text-[#C41E3A] mb-4">認証エラー</h1>
-        <p className="text-gray-600 mb-4">{errorMessage}</p>
-        <Link href="/register" className="text-[#2B4C7E] hover:underline">
+      <div className="card-yukaku rounded-xl p-8 max-w-md w-full text-center">
+        <h1 className="text-xl font-bold text-[#C4364A] mb-4 font-serif">認証エラー</h1>
+        <p className="text-[#F4E4C1]/60 mb-4">{errorMessage}</p>
+        <Link href="/register" className="text-[#D4A017]/70 hover:text-[#D4A017] transition-colors font-serif">
           もう一度やり直す
         </Link>
       </div>
     );
   }
 
-  return <p className="text-gray-600">ダッシュボードに移動中...</p>;
+  return <p className="text-[#F4E4C1]/60 font-serif">ダッシュボードに移動中...</p>;
 }
 
 export default function VerifyPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-4">
-      <Suspense fallback={<p className="text-gray-600">読み込み中...</p>}>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <Suspense fallback={<p className="text-[#F4E4C1]/60 font-serif">読み込み中...</p>}>
         <VerifyContent />
       </Suspense>
     </div>

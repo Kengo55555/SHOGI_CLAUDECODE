@@ -61,35 +61,35 @@ export default function MatchRequestsPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">対戦募集一覧</h2>
+        <h2 className="font-[family-name:var(--font-noto-serif)] text-xl font-bold text-kinpaku tracking-wider">対戦募集</h2>
         <Link
           href="/match-requests/new"
-          className="bg-[#2D5F2D] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#245024] transition-colors"
+          className="btn-kurenai px-4 py-2 rounded-lg text-sm font-medium"
         >
           募集する
         </Link>
       </div>
 
       {loading ? (
-        <div className="text-center text-gray-500 py-8">読み込み中...</div>
+        <div className="text-center text-[#F4E4C1]/50 py-8">読み込み中...</div>
       ) : requests.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+        <div className="card-yukaku rounded-xl p-8 text-center text-[#F4E4C1]/35 text-sm font-serif">
           現在対戦募集はありません
         </div>
       ) : (
         <div className="space-y-3">
           {requests.map((req) => (
-            <div key={req.id} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div key={req.id} className="card-yukaku rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{req.requester.handleName}</span>
-                <span className="text-xs text-gray-500">
+                <span className="font-medium text-[#F4E4C1] font-serif">{req.requester.handleName}</span>
+                <span className="text-xs text-[#D4A017]/50">
                   残り {getRemainingMinutes(req.expiresAt)}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mb-3">{req.timeControl}分切れ負け</p>
+              <p className="text-sm text-[#F4E4C1]/50 mb-3">{req.timeControl}分切れ負け</p>
               <button
                 onClick={() => handleAccept(req.id)}
-                className="w-full bg-[#2B4C7E] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#1E3A5F] transition-colors"
+                className="btn-kurenai w-full py-2 rounded-lg text-sm font-medium"
               >
                 対戦する
               </button>

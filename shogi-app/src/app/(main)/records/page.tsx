@@ -47,25 +47,25 @@ export default function RecordsPage() {
     ? ((summary.wins / (summary.totalGames - summary.draws)) * 100).toFixed(1)
     : '0.0';
 
-  if (loading) return <div className="max-w-lg mx-auto px-4 py-8 text-center text-gray-500">読み込み中...</div>;
+  if (loading) return <div className="max-w-lg mx-auto px-4 py-8 text-center text-[#F4E4C1]/50">読み込み中...</div>;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8">
-      <h2 className="text-xl font-bold mb-4">戦績</h2>
+      <h2 className="font-[family-name:var(--font-noto-serif)] text-xl font-bold mb-4 text-kinpaku tracking-wider text-center">戦績帳</h2>
 
       {/* サマリ */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-        <div className="text-sm text-gray-600">
+      <div className="card-yukaku rounded-xl p-4 mb-6">
+        <div className="text-sm text-[#F4E4C1]/70">
           通算: {summary.totalGames}戦 {summary.wins}勝 {summary.losses}敗 {summary.draws}分
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-[#D4A017]/70">
           勝率: {winRate}%
         </div>
       </div>
 
       {/* 対局一覧 */}
       {matches.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+        <div className="card-yukaku rounded-xl p-8 text-center text-[#F4E4C1]/35 text-sm font-serif">
           まだ対局記録がありません
         </div>
       ) : (
@@ -75,25 +75,25 @@ export default function RecordsPage() {
               ? m.opponent.handleName
               : `CPU（${CPU_LEVELS[m.opponent.level] || '不明'}）`;
             const resultIcon = m.result === 'win' ? '◯' : m.result === 'lose' ? '✕' : '△';
-            const resultColor = m.result === 'win' ? 'text-[#B8860B]' : m.result === 'lose' ? 'text-gray-500' : 'text-gray-600';
+            const resultColor = m.result === 'win' ? 'text-[#D4A017]' : m.result === 'lose' ? 'text-[#F4E4C1]/40' : 'text-[#F4E4C1]/60';
             const resultLabel = m.result === 'win' ? '勝ち' : m.result === 'lose' ? '負け' : '引き分け';
             const date = new Date(m.startedAt);
             const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
             return (
-              <div key={m.id} className="bg-white rounded-lg border border-gray-200 p-4">
+              <div key={m.id} className="card-yukaku rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-500">{dateStr}</span>
-                  <span className="text-xs text-gray-500">{m.timeControl}分切れ負け</span>
+                  <span className="text-xs text-[#F4E4C1]/40">{dateStr}</span>
+                  <span className="text-xs text-[#F4E4C1]/40">{m.timeControl}分切れ負け</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm">vs {opponentName}</span>
-                    <span className="text-xs text-gray-500 ml-2">
+                    <span className="text-sm text-[#F4E4C1]">vs {opponentName}</span>
+                    <span className="text-xs text-[#D4A017]/50 ml-2">
                       {m.mySide === 'sente' ? '☗先手' : '☖後手'}
                     </span>
                   </div>
-                  <Link href={`/records/${m.id}`} className="text-xs text-[#2B4C7E] hover:underline">
+                  <Link href={`/records/${m.id}`} className="text-xs text-[#D4A017]/70 hover:text-[#D4A017] transition-colors">
                     棋譜を見る
                   </Link>
                 </div>

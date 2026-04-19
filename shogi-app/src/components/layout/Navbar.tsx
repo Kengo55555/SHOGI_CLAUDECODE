@@ -18,7 +18,7 @@ export function Navbar({ user }: NavbarProps) {
   ];
 
   return (
-    <header className="bg-kurenai-obi shadow-md shadow-[#C4364A]/10">
+    <header className="bg-gradient-to-r from-[#1a0607] via-[#3a1013]/80 to-[#1a0607] border-b border-[#D4A017]/20 shadow-lg shadow-black/30">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           <Link href="/dashboard" className="font-[family-name:var(--font-noto-serif)] text-lg font-bold text-[#FFF8F0] tracking-widest drop-shadow">

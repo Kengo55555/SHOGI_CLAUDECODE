@@ -68,34 +68,34 @@ export default function ProfilePage() {
   }
 
   if (loading) {
-    return <div className="max-w-md mx-auto px-4 py-8 text-center text-gray-500">読み込み中...</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-[#F4E4C1]/50">読み込み中...</div>;
   }
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
-      <h2 className="text-xl font-bold mb-6">プロフィール設定</h2>
+      <h2 className="font-[family-name:var(--font-noto-serif)] text-xl font-bold mb-6 text-kinpaku tracking-wider text-center">御設定</h2>
 
       <form onSubmit={handleSave}>
-        <label className="block text-sm font-medium mb-1">ハンドルネーム</label>
+        <label className="block text-xs font-medium mb-1 text-[#D4A017]/70 font-serif">ハンドルネーム</label>
         <input
           type="text"
           value={handleName}
           onChange={(e) => setHandleName(e.target.value)}
           maxLength={20}
           required
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1 focus:outline-none focus:ring-2 focus:ring-[#2B4C7E]"
+          className="w-full bg-[#1A1118]/60 border border-[#D4A017]/20 rounded-lg px-4 py-2 mb-1 text-[#F4E4C1] placeholder-[#F4E4C1]/20 focus:outline-none focus:ring-2 focus:ring-[#D4A017]/30 focus:border-[#D4A017]/40"
         />
-        <p className="text-xs text-gray-500 mb-4">1〜20文字</p>
+        <p className="text-xs text-[#F4E4C1]/30 mb-4 font-serif">1〜20文字</p>
 
-        <label className="block text-sm font-medium mb-1">メールアドレス</label>
-        <p className="text-gray-600 mb-6">{email}</p>
+        <label className="block text-xs font-medium mb-1 text-[#D4A017]/70 font-serif">メールアドレス</label>
+        <p className="text-[#F4E4C1]/60 mb-6">{email}</p>
 
-        {message && <p className="text-sm mb-4 text-[#2B4C7E]">{message}</p>}
+        {message && <p className="text-sm mb-4 text-[#D4A017]">{message}</p>}
 
         <button
           type="submit"
           disabled={saving}
-          className="w-full bg-[#2D5F2D] text-white py-2 rounded-lg font-medium hover:bg-[#245024] transition-colors disabled:opacity-50 mb-4"
+          className="btn-kurenai w-full py-2 rounded-lg font-medium disabled:opacity-50 mb-4"
         >
           {saving ? '保存中...' : '保存する'}
         </button>
@@ -103,33 +103,33 @@ export default function ProfilePage() {
 
       <button
         onClick={handleLogout}
-        className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors mb-8"
+        className="w-full border border-[#F4E4C1]/20 text-[#F4E4C1]/60 py-2 rounded-lg font-medium hover:bg-[#F4E4C1]/5 transition-colors mb-8"
       >
         ログアウト
       </button>
 
-      <hr className="mb-6" />
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#D4A017]/20 to-transparent mb-6" />
 
       {!showDeleteConfirm ? (
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className="w-full border border-[#C41E3A] text-[#C41E3A] py-2 rounded-lg text-sm hover:bg-red-50 transition-colors"
+          className="w-full border border-[#C4364A]/40 text-[#C4364A]/70 py-2 rounded-lg text-sm hover:bg-[#C4364A]/5 transition-colors"
         >
           退会する
         </button>
       ) : (
-        <div className="bg-red-50 border border-[#C41E3A] rounded-lg p-4">
-          <p className="text-sm text-[#C41E3A] mb-3">本当に退会しますか？この操作は取り消せません。</p>
+        <div className="bg-[#C4364A]/10 border border-[#C4364A]/40 rounded-lg p-4">
+          <p className="text-sm text-[#C4364A] mb-3">本当に退会しますか？この操作は取り消せません。</p>
           <div className="flex gap-2">
             <button
               onClick={handleDelete}
-              className="flex-1 bg-[#C41E3A] text-white py-2 rounded-lg text-sm"
+              className="flex-1 bg-[#C4364A] text-[#FFF8F0] py-2 rounded-lg text-sm"
             >
               退会する
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="flex-1 border border-gray-300 py-2 rounded-lg text-sm"
+              className="flex-1 border border-[#F4E4C1]/20 text-[#F4E4C1]/60 py-2 rounded-lg text-sm"
             >
               戻る
             </button>

@@ -1,7 +1,6 @@
 'use client';
 
 import type { KomaType, Mochigoma, Player } from '@/lib/shogi/core/types';
-import { isPromoted } from '@/lib/shogi/core/constants';
 import { PieceComponent } from './Piece';
 
 interface MochigomaBarProps {
@@ -19,9 +18,11 @@ export function MochigomaBar({ mochigoma, owner, isMyTurn, selectedPiece, perspe
   const pieces = MOCHIGOMA_ORDER.filter((k) => (mochigoma[k] || 0) > 0);
 
   return (
-    <div className="flex items-center gap-0.5 px-2 py-1 min-h-[44px] bg-[#C4943C]/15 rounded border border-[#C4943C]/20">
+    <div className="card-yukaku flex items-center gap-1 px-3 py-2 min-h-[54px] rounded-sm">
       {pieces.length === 0 ? (
-        <span className="text-xs text-gray-400 px-1">持ち駒なし</span>
+        <span className="text-xs text-[#F4E4C1]/50 px-1 font-serif tracking-widest">
+          持ち駒なし
+        </span>
       ) : (
         pieces.map((piece) => {
           const count = mochigoma[piece] || 0;
@@ -32,14 +33,27 @@ export function MochigomaBar({ mochigoma, owner, isMyTurn, selectedPiece, perspe
               onClick={() => isMyTurn && onSelect(piece)}
               disabled={!isMyTurn}
               className={`
-                relative w-9 h-10 flex-shrink-0
-                ${isMyTurn ? 'cursor-pointer' : 'cursor-default'}
-                ${isSelected ? 'ring-2 ring-[#2B4C7E] rounded' : ''}
+                relative w-10 h-11 flex-shrink-0
+                ${isMyTurn ? 'cursor-pointer hover:-translate-y-0.5 transition-transform' : 'cursor-default'}
+                ${isSelected ? 'ring-2 ring-[#F0CF6A] rounded' : ''}
               `}
+              style={
+                isSelected
+                  ? { filter: 'drop-shadow(0 0 8px rgba(240,207,106,.8))' }
+                  : undefined
+              }
             >
-              <PieceComponent type={piece} owner={owner} perspective={perspective} isSelected={isSelected} />
+              <PieceComponent
+                type={piece}
+                owner={owner}
+                perspective={perspective}
+                isSelected={isSelected}
+              />
               {count > 1 && (
-                <span className="absolute -bottom-0.5 -right-0.5 bg-[#2B4C7E] text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span
+                  className="absolute -bottom-1 -right-1 bg-[#C4364A] text-[#FFF8F0] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                  style={{ boxShadow: '0 0 0 1.5px #D4A017' }}
+                >
                   {count}
                 </span>
               )}

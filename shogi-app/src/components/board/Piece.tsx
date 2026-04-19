@@ -10,11 +10,6 @@ interface PieceProps {
   isSelected?: boolean;
 }
 
-/**
- * 駒の表示テキスト（参考画像準拠）
- * 通常駒: 2文字漢字（上段・下段）
- * 成駒: 赤字
- */
 const PIECE_DISPLAY: Record<PieceType, { top: string; bottom: string }> = {
   ou:      { top: '王', bottom: '将' },
   gyoku:   { top: '玉', bottom: '将' },
@@ -36,9 +31,9 @@ const PIECE_DISPLAY: Record<PieceType, { top: string; bottom: string }> = {
 export function PieceComponent({ type, owner, perspective, isSelected }: PieceProps) {
   const display = PIECE_DISPLAY[type];
   const isNari = isPromoted(type);
-  // 相手側の駒を180度回転する（自分側は正立）
   const shouldRotate = owner !== perspective;
-  const textColor = isNari ? '#B22222' : '#1A1000';
+  // 遊郭テーマ：成駒は紅、通常駒は濃墨
+  const textColor = isNari ? '#C4364A' : '#1A0607';
   const isSingleChar = !display.bottom;
 
   return (
@@ -51,24 +46,26 @@ export function PieceComponent({ type, owner, perspective, isSelected }: PiecePr
     >
       <svg
         viewBox="0 0 100 112"
-        className="w-[92%] h-[92%] drop-shadow-md"
-        style={{ filter: isSelected ? 'drop-shadow(0 0 4px rgba(43,76,126,0.6))' : undefined }}
+        className="w-[94%] h-[94%] drop-shadow-md"
+        style={{
+          filter: isSelected
+            ? 'drop-shadow(0 0 6px #F0CF6A) drop-shadow(0 0 2px #D4A017)'
+            : undefined,
+        }}
       >
         <defs>
-          {/* 木目グラデーション */}
+          {/* 金箔調木目グラデ */}
           <linearGradient id={`wood-${type}-${owner}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#E8C878" />
-            <stop offset="25%" stopColor="#DCBA62" />
-            <stop offset="50%" stopColor="#E5C56E" />
-            <stop offset="75%" stopColor="#D4AD55" />
-            <stop offset="100%" stopColor="#C9A04A" />
+            <stop offset="0%"  stopColor="#F5DBA0" />
+            <stop offset="30%" stopColor="#E8C878" />
+            <stop offset="60%" stopColor="#D9A866" />
+            <stop offset="100%" stopColor="#A6743A" />
           </linearGradient>
-          {/* 駒の影 */}
           <filter id="pieceInnerShadow">
             <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" />
             <feOffset dx="0.5" dy="1" />
             <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" />
-            <feFlood floodColor="#8B6914" floodOpacity="0.15" />
+            <feFlood floodColor="#8B6914" floodOpacity="0.2" />
             <feComposite in2="SourceGraphic" operator="in" />
             <feMerge>
               <feMergeNode />
@@ -78,70 +75,51 @@ export function PieceComponent({ type, owner, perspective, isSelected }: PiecePr
         </defs>
 
         <g transform={shouldRotate ? 'rotate(180 50 56)' : ''}>
-          {/* 駒の五角形（本体） */}
+          {/* 五角形本体 */}
           <polygon
             points="50,4 94,28 86,108 14,108 6,28"
             fill={`url(#wood-${type}-${owner})`}
-            stroke="#8B7355"
+            stroke="#7A5E22"
             strokeWidth="1.5"
             filter="url(#pieceInnerShadow)"
           />
-
-          {/* 木目テクスチャライン */}
-          <line x1="20" y1="35" x2="22" y2="100" stroke="#C9A04A" strokeWidth="0.3" opacity="0.4" />
-          <line x1="40" y1="15" x2="38" y2="105" stroke="#C9A04A" strokeWidth="0.3" opacity="0.3" />
-          <line x1="60" y1="12" x2="62" y2="105" stroke="#C9A04A" strokeWidth="0.3" opacity="0.35" />
-          <line x1="78" y1="30" x2="76" y2="100" stroke="#C9A04A" strokeWidth="0.3" opacity="0.3" />
-
-          {/* 駒のフチ（内側の線） */}
+          {/* 金フチ */}
           <polygon
             points="50,8 90,30 83,105 17,105 10,30"
             fill="none"
-            stroke="#B8972E"
-            strokeWidth="0.5"
-            opacity="0.3"
+            stroke="#D4A017"
+            strokeWidth="0.6"
+            opacity="0.5"
           />
+          {/* 木目テクスチャ */}
+          <line x1="20" y1="35" x2="22" y2="100" stroke="#B8972E" strokeWidth="0.3" opacity=".4" />
+          <line x1="40" y1="15" x2="38" y2="105" stroke="#B8972E" strokeWidth="0.3" opacity=".3" />
+          <line x1="60" y1="12" x2="62" y2="105" stroke="#B8972E" strokeWidth="0.3" opacity=".35" />
+          <line x1="78" y1="30" x2="76" y2="100" stroke="#B8972E" strokeWidth="0.3" opacity=".3" />
 
           {/* 文字 */}
           {isSingleChar ? (
-            /* 1文字（と、全など） */
             <text
-              x="50"
-              y="66"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fill={textColor}
-              fontSize="42"
-              fontWeight="900"
+              x="50" y="66" textAnchor="middle" dominantBaseline="middle"
+              fill={textColor} fontSize="46" fontWeight="900"
               fontFamily="'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif"
               style={{ paintOrder: 'stroke', stroke: textColor, strokeWidth: 0.5 }}
             >
               {display.top}
             </text>
           ) : (
-            /* 2文字（上段・下段） */
             <>
               <text
-                x="50"
-                y="44"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill={textColor}
-                fontSize="34"
-                fontWeight="900"
+                x="50" y="44" textAnchor="middle" dominantBaseline="middle"
+                fill={textColor} fontSize="38" fontWeight="900"
                 fontFamily="'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif"
                 style={{ paintOrder: 'stroke', stroke: textColor, strokeWidth: 0.3 }}
               >
                 {display.top}
               </text>
               <text
-                x="50"
-                y="82"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill={textColor}
-                fontSize="34"
-                fontWeight="900"
+                x="50" y="84" textAnchor="middle" dominantBaseline="middle"
+                fill={textColor} fontSize="38" fontWeight="900"
                 fontFamily="'Hiragino Mincho ProN', 'Yu Mincho', 'MS Mincho', serif"
                 style={{ paintOrder: 'stroke', stroke: textColor, strokeWidth: 0.3 }}
               >

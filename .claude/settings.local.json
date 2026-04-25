@@ -17,7 +17,11 @@
       "Bash(vercel:*)",
       "Bash(git add:*)",
       "Bash(grep:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(cat /Users/p211/Desktop/SHOGI_CLAUDECODE/shogi-app/.env*)",
+      "Bash(npm run:*)",
+      "Bash(ls:*)",
+      "Bash(gh pr:*)"
     ]
   }
 }
